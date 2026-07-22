@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FDEFF4, #E8F3FB 50%, #F2EAFB);
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: #6b5b6b;
+    }
+
+    .card {
+      background: #ffffffcc;
+      border-radius: 28px;
+      padding: 40px 36px;
+      width: 340px;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(200, 170, 200, 0.35);
+      border: 2px solid #FBE1EE;
+    }
+
+    .avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #FFD6E8;
+      box-shadow: 0 6px 16px rgba(255, 182, 210, 0.5);
+    }
+
+    .name {
+      margin: 18px 0 4px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #a87ca8;
+    }
+
+    .intro {
+      margin: 0 0 24px;
+      font-size: 15px;
+      color: #8b7a8b;
+    }
+
+    .likes-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #b98fc4;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .likes {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .likes li {
+      background: #F5F0FB;
+      border-radius: 16px;
+      padding: 10px 16px;
+      font-size: 15px;
+      color: #7a6a8a;
+    }
+
+    .likes li::before {
+      content: "🌸 ";
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img class="avatar" src="avatar.svg">
+    <h1 class="name">강민지</h1>
+    <p class="intro">코드로 소소한 행복을 만드는 개발자입니다 ☁️</p>
+
+    <div class="likes-title">LIKES</div>
+    <ul class="likes">
+      <li>따뜻한 라떼 한 잔</li>
+      <li>주말 산책</li>
+      <li>귀여운 UI 디자인</li>
+    </ul>
+  </div>
+</body>
+</html>
