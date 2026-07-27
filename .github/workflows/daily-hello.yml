@@ -1,0 +1,52 @@
+name: Daily Hello
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # 매일 한국 시간(KST, UTC+9) 오전 9시
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-quote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pick random quote and update README
+        run: |
+          python3 - <<'EOF'
+          import random
+          from pathlib import Path
+
+          quotes = [
+              line.strip()
+              for line in Path("quotes.txt").read_text(encoding="utf-8").splitlines()
+              if line.strip()
+          ]
+          quote = random.choice(quotes)
+
+          readme = Path("README.md")
+          text = readme.read_text(encoding="utf-8")
+
+          start = "<!-- QUOTE:START -->"
+          end = "<!-- QUOTE:END -->"
+          s = text.index(start) + len(start)
+          e = text.index(end)
+          new_text = text[:s] + "\n" + quote + "\n" + text[e:]
+          readme.write_text(new_text, encoding="utf-8")
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "변경 사항 없음"
+          else
+            git commit -m "chore: 오늘의 한마디 갱신"
+            git push
+          fi

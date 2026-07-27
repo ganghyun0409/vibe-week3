@@ -1,0 +1,62 @@
+name: Page Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  page-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Find HTML files
+        id: find
+        run: |
+          files=$(git ls-files '*.html' | tr '\n' ' ')
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Run page-check
+        if: steps.find.outputs.files != ''
+        run: |
+          python .claude/skills/page-check/scripts/check_page.py ${{ steps.find.outputs.files }} > page-check-result.json
+          cat page-check-result.json
+
+      - name: Upload result
+        if: steps.find.outputs.files != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: page-check-result
+          path: page-check-result.json
+
+      - name: Fail on critical issues
+        if: steps.find.outputs.files != ''
+        run: |
+          python - <<'EOF'
+          import json
+          import sys
+
+          with open("page-check-result.json", encoding="utf-8") as f:
+              results = json.load(f)
+
+          critical = []
+          for r in results:
+              for name, check in r["checks"].items():
+                  if check.get("status") == "fail" and check.get("severity") == "critical":
+                      critical.append(f"{r['file']}: {name}")
+
+          if critical:
+              print("🔴 심각 이슈 발견:")
+              for c in critical:
+                  print(f"  - {c}")
+              sys.exit(1)
+
+          print("🟢 심각 이슈 없음.")
+          EOF
