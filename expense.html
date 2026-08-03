@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>미니 가계부 분석기</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FDEFF4, #E8F3FB 50%, #F2EAFB);
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: #6b5b6b;
+      padding: 24px 0;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: #ffffffcc;
+      border-radius: 28px;
+      padding: 36px 32px;
+      width: 380px;
+      box-shadow: 0 12px 30px rgba(200, 170, 200, 0.35);
+      border: 2px solid #FBE1EE;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #a87ca8;
+      text-align: center;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .input-row input {
+      border: 2px solid #FBE1EE;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #6b5b6b;
+      background: #FFFDFE;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .input-row input:focus {
+      border-color: #FFB6D2;
+    }
+
+    #itemName {
+      flex: 1.4;
+      min-width: 0;
+    }
+
+    #itemAmount {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #addBtn {
+      border: none;
+      border-radius: 14px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      background: linear-gradient(135deg, #FFB6D2, #C9A6E8);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    #addBtn:hover {
+      opacity: 0.9;
+    }
+
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    .list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #F5F0FB;
+      border-radius: 16px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #7a6a8a;
+    }
+
+    .list .item-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .list .item-amount {
+      font-weight: 700;
+      color: #a87ca8;
+      margin: 0 10px;
+      white-space: nowrap;
+    }
+
+    .list .delete-btn {
+      border: none;
+      background: #FFD6E8;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .list .delete-btn:hover {
+      background: #FFB6D2;
+    }
+
+    .empty {
+      text-align: center;
+      font-size: 13px;
+      color: #b8a8b8;
+      padding: 20px 0;
+    }
+
+    .total-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #FFE1EC, #E8DFF7);
+      border-radius: 18px;
+      padding: 16px 18px;
+    }
+
+    .total-box .label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #8b6a8b;
+      letter-spacing: 1px;
+    }
+
+    .total-box .value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #a2568f;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>💸 미니 가계부 분석기</h1>
+
+    <div class="input-row">
+      <input type="text" id="itemName" placeholder="항목명 (예: 커피)">
+      <input type="number" id="itemAmount" placeholder="금액">
+      <button id="addBtn" onclick="addItem()">추가</button>
+    </div>
+
+    <ul class="list" id="list"></ul>
+
+    <div class="total-box">
+      <span class="label">TOTAL</span>
+      <span class="value" id="total">0원</span>
+    </div>
+  </div>
+
+  <script>
+    const items = [];
+    const listEl = document.getElementById('list');
+    const totalEl = document.getElementById('total');
+    const nameInput = document.getElementById('itemName');
+    const amountInput = document.getElementById('itemAmount');
+
+    function formatWon(num) {
+      return num.toLocaleString('ko-KR') + '원';
+    }
+
+    function render() {
+      listEl.innerHTML = '';
+
+      if (items.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'empty';
+        empty.textContent = '아직 등록된 항목이 없어요';
+        empty.style.background = 'transparent';
+        listEl.appendChild(empty);
+      } else {
+        items.forEach((item, index) => {
+          const li = document.createElement('li');
+
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'item-name';
+          nameSpan.textContent = item.name;
+
+          const amountSpan = document.createElement('span');
+          amountSpan.className = 'item-amount';
+          amountSpan.textContent = formatWon(item.amount);
+
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-btn';
+          delBtn.textContent = '×';
+          delBtn.onclick = () => removeItem(index);
+
+          li.appendChild(nameSpan);
+          li.appendChild(amountSpan);
+          li.appendChild(delBtn);
+          listEl.appendChild(li);
+        });
+      }
+
+      const total = items.reduce((sum, item) => sum + item.amount, 0);
+      totalEl.textContent = formatWon(total);
+    }
+
+    function addItem() {
+      const name = nameInput.value.trim();
+      const amount = Number(amountInput.value);
+
+      if (!name) {
+        alert('항목명을 입력해 주세요.');
+        return;
+      }
+      if (!amountInput.value || isNaN(amount) || amount <= 0) {
+        alert('올바른 금액을 입력해 주세요.');
+        return;
+      }
+
+      items.push({ name, amount });
+      nameInput.value = '';
+      amountInput.value = '';
+      nameInput.focus();
+      render();
+    }
+
+    function removeItem(index) {
+      items.splice(index, 1);
+      render();
+    }
+
+    amountInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addItem();
+    });
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addItem();
+    });
+
+    render();
+  </script>
+</body>
+</html>
