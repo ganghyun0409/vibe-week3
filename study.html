@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>공부 계획 체크리스트</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FDEFF4, #E8F3FB 50%, #F2EAFB);
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: #6b5b6b;
+      padding: 24px 0;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: #ffffffcc;
+      border-radius: 28px;
+      padding: 36px 32px;
+      width: 380px;
+      box-shadow: 0 12px 30px rgba(200, 170, 200, 0.35);
+      border: 2px solid #FBE1EE;
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #a87ca8;
+      text-align: center;
+    }
+
+    .progress-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #FFE1EC, #E8DFF7);
+      border-radius: 18px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+
+    .progress-box .label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #8b6a8b;
+      letter-spacing: 1px;
+    }
+
+    .progress-box .value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #a2568f;
+    }
+
+    .progress-bar {
+      height: 8px;
+      border-radius: 8px;
+      background: #F0E4F7;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: #bb8cff;
+      border-radius: 8px;
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .input-row input {
+      flex: 1;
+      min-width: 0;
+      border: 2px solid #FBE1EE;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #6b5b6b;
+      background: #FFFDFE;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .input-row input:focus {
+      border-color: #FFB6D2;
+    }
+
+    #addBtn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: #ffffff;
+      background: #bb8cff;
+      box-shadow: 0 6px 16px rgba(187, 140, 255, 0.45);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    }
+
+    #addBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(187, 140, 255, 0.55);
+      filter: brightness(1.06);
+    }
+
+    #addBtn:active {
+      transform: translateY(0) scale(0.97);
+      box-shadow: 0 4px 10px rgba(187, 140, 255, 0.45);
+    }
+
+    #addBtn:focus-visible {
+      outline: 2px solid #bb8cff;
+      outline-offset: 2px;
+    }
+
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #F5F0FB;
+      border-radius: 16px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #7a6a8a;
+    }
+
+    .list li.done {
+      background: #F0F7EE;
+    }
+
+    .list .check-btn {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 8px;
+      border: 2px solid #d8c4ee;
+      background: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #ffffff;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .list li.done .check-btn {
+      background: #bb8cff;
+      border-color: #bb8cff;
+    }
+
+    .list .check-btn:focus-visible {
+      outline: 2px solid #bb8cff;
+      outline-offset: 2px;
+    }
+
+    .list .item-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .list li.done .item-text {
+      text-decoration: line-through;
+      color: #a8b8a0;
+    }
+
+    .list .delete-btn {
+      border: none;
+      background: #e4d4ff;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .list .delete-btn:hover {
+      background: #bb8cff;
+      transform: scale(1.15) rotate(90deg);
+      box-shadow: 0 4px 10px rgba(187, 140, 255, 0.6);
+    }
+
+    .list .delete-btn:active {
+      transform: scale(0.92) rotate(90deg);
+    }
+
+    .list .delete-btn:focus-visible {
+      outline: 2px solid #bb8cff;
+      outline-offset: 2px;
+    }
+
+    .empty {
+      text-align: center;
+      font-size: 13px;
+      color: #b8a8b8;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>📚 공부 계획 체크리스트</h1>
+
+    <div class="progress-box">
+      <span class="label">진행률</span>
+      <span class="value" id="progressText">0 / 0</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <div class="input-row">
+      <input type="text" id="planInput" placeholder="오늘 공부할 내용 (예: 영단어 30개 암기)">
+      <button id="addBtn" onclick="addPlan()">추가</button>
+    </div>
+
+    <ul class="list" id="list"></ul>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'studyPlans';
+    const listEl = document.getElementById('list');
+    const planInput = document.getElementById('planInput');
+    const progressText = document.getElementById('progressText');
+    const progressFill = document.getElementById('progressFill');
+
+    let plans = loadPlans();
+
+    function loadPlans() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function savePlans() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(plans));
+    }
+
+    function render() {
+      listEl.innerHTML = '';
+
+      if (plans.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'empty';
+        empty.textContent = '📝 아직 계획이 없어요, 오늘의 공부 계획을 추가해보세요!';
+        empty.style.background = 'transparent';
+        listEl.appendChild(empty);
+      } else {
+        plans.forEach((plan, index) => {
+          const li = document.createElement('li');
+          if (plan.done) li.classList.add('done');
+
+          const checkBtn = document.createElement('button');
+          checkBtn.className = 'check-btn';
+          checkBtn.textContent = plan.done ? '✓' : '';
+          checkBtn.setAttribute('aria-label', plan.done ? '완료 취소' : '완료로 표시');
+          checkBtn.onclick = () => toggleDone(index);
+
+          const textSpan = document.createElement('span');
+          textSpan.className = 'item-text';
+          textSpan.textContent = plan.text;
+
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-btn';
+          delBtn.textContent = '×';
+          delBtn.setAttribute('aria-label', '삭제');
+          delBtn.onclick = () => removePlan(index);
+
+          li.appendChild(checkBtn);
+          li.appendChild(textSpan);
+          li.appendChild(delBtn);
+          listEl.appendChild(li);
+        });
+      }
+
+      const doneCount = plans.filter(p => p.done).length;
+      const total = plans.length;
+      progressText.textContent = `${doneCount} / ${total}`;
+      progressFill.style.width = total === 0 ? '0%' : `${(doneCount / total) * 100}%`;
+    }
+
+    function addPlan() {
+      const text = planInput.value.trim();
+      if (!text) {
+        alert('공부할 내용을 입력해 주세요.');
+        return;
+      }
+
+      plans.push({ text, done: false });
+      planInput.value = '';
+      planInput.focus();
+      savePlans();
+      render();
+    }
+
+    function toggleDone(index) {
+      plans[index].done = !plans[index].done;
+      savePlans();
+      render();
+    }
+
+    function removePlan(index) {
+      plans.splice(index, 1);
+      savePlans();
+      render();
+    }
+
+    planInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addPlan();
+    });
+
+    render();
+  </script>
+</body>
+</html>
