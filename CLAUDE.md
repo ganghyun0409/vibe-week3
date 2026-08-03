@@ -15,3 +15,7 @@ There are no build, lint, or test commands to document because none exist yet. W
 
 - 모든 대화(응답)는 한국어로 작성한다.
 - 모든 git 커밋 메시지는 한국어로 작성한다.
+
+## Design
+
+- 버튼은 연보라(#bb8cff) 색상과 둥근 모서리 12px(border-radius: 12px)를 기본 스타일로 한다.
